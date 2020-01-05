@@ -136,8 +136,16 @@ namespace Kazan2019_Session6
 
                 #region Monthly Department Spending
                 //uses same data as DS_EM_Spending_By_Department
-                var DS_MonthlyDepartmentSpendingRatio = (from p in DS_EM_Spending_By_Department1
-                                                  group p by new { p.theDate, p.DeptName } into q
+                var DS_MonthlyDepartmentSpendingRatio1 = (from p in DS_EM_Spending_By_Department1
+                                                         select new
+                                                         {
+                                                             p.DeptName,
+                                                             theDate = p.theDate.ToString("yyyy-MM"),
+                                                             p.Spending
+                                                         });
+
+                var DS_MonthlyDepartmentSpendingRatio = (from p in DS_MonthlyDepartmentSpendingRatio1
+                                                         group p by new { p.theDate, p.DeptName } into q
                                                   orderby q.Key.theDate, q.Key.DeptName
                                                   select new
                                                   {
@@ -153,7 +161,7 @@ namespace Kazan2019_Session6
                     chMonthlyDepartmentSpending.Series.Add(new System.Windows.Forms.DataVisualization.Charting.Series(DeptName) { });
                 }
 
-                var curDate = DateTime.MaxValue;
+                var curDate = "";
                 var DateIdx = 0;
                 foreach (var r in DS_MonthlyDepartmentSpendingRatio)
                 {
@@ -163,7 +171,7 @@ namespace Kazan2019_Session6
                         DateIdx++;
                     }
                     var idx = chMonthlyDepartmentSpending.Series[r.DeptName].Points.AddXY(DateIdx, r.Total);
-                    chMonthlyDepartmentSpending.Series[r.DeptName].Points[idx].AxisLabel = r.theDate.ToString("yyyy-MM");
+                    chMonthlyDepartmentSpending.Series[r.DeptName].Points[idx].AxisLabel = r.theDate;
                     chMonthlyDepartmentSpending.Series[r.DeptName].Points[idx].Label = r.Total.Value.ToString("#,##0");
                 }                
                 #endregion
